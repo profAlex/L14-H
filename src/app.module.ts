@@ -7,6 +7,8 @@ import {TestingModule} from './modules/testing/testing.module';
 import {BloggersPlatformModule} from './modules/bloggers-platform/bloggers-platform.module';
 import {CoreModule} from './core/core.module';
 import {envConfig} from "./config";
+import {AuthorizationModule} from "./modules/authorization/authorization.module";
+import {NotificationsModule} from "./modules/notifications/notifications.module";
 
 @Module({
     //все модули должны быть заимпортированы в корневой модуль, либо напрямую, либо по цепочке (через другие модули)
@@ -16,6 +18,8 @@ import {envConfig} from "./config";
         TestingModule,
         BloggersPlatformModule,
         CoreModule,
+        AuthorizationModule,
+        NotificationsModule
     ],
     controllers: [AppController],
     providers: [AppService],

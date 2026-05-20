@@ -18,7 +18,7 @@ import {CommentsQueryRepository} from "./comments/infrastructure/query/comments.
 import {CommentsCommandRepository} from "./comments/infrastructure/comments.command-repository";
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
-@Module({
+@ Module({
   imports: [
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),

@@ -10,11 +10,11 @@ describe('PostsController (e2e)', () => {
     let app: INestApplication;
 
     beforeAll(async () => {
-        const moduleFixture: TestingModule = await Test.createTestingModule({
+        const testingAppModule: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
         }).compile();
 
-        app = moduleFixture.createNestApplication();
+        app = testingAppModule.createNestApplication();
         appSetup(app); // не забываем подключить глобальные префиксы, пайпы
         await app.init();
     });
@@ -30,7 +30,7 @@ describe('PostsController (e2e)', () => {
     });
 
 
-    it('GET /posts - should return 200 and paginated post list', async () => {
+    it('GET /posts - should return 201 and paginated post list', async () => {
 
         // создание блога
         const createBlogResponse = await request(app.getHttpServer())
@@ -132,7 +132,7 @@ describe('PostsController (e2e)', () => {
 
     });
 
-    it('GET /posts - should return 200 and paginated post list', async () => {
+    it('POST /posts - should return 201 and created post', async () => {
 
         // создание блога
         const createBlogResponse = await request(app.getHttpServer())
