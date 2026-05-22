@@ -7,7 +7,7 @@ import {TestingModule} from './modules/testing/testing.module';
 import {BloggersPlatformModule} from './modules/bloggers-platform/bloggers-platform.module';
 import {CoreModule} from './core/core.module';
 import {envConfig} from "./config";
-import {AuthorizationModule} from "./modules/authorization/authorization.module";
+import {AuthorisationModule} from "./modules/authorisation/authorisation.module";
 import {NotificationsModule} from "./modules/notifications/notifications.module";
 
 @Module({
@@ -18,7 +18,7 @@ import {NotificationsModule} from "./modules/notifications/notifications.module"
         TestingModule,
         BloggersPlatformModule,
         CoreModule,
-        AuthorizationModule,
+        AuthorisationModule,
         NotificationsModule
     ],
     controllers: [AppController],

@@ -1,67 +1,89 @@
-import { User, UserModelType } from '../../domain/user.entity';
-import { InjectModel } from '@nestjs/mongoose';
-import { UserViewDto } from '../../api/view-dto/users.view-dto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {User, UserModelType} from '../../domain/user.entity';
+import {InjectModel} from '@nestjs/mongoose';
+import {UserViewDto} from '../../api/view-dto/users.view-dto';
+import {Injectable, NotFoundException} from '@nestjs/common';
 
-import { FilterQuery } from 'mongoose';
-import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
-import { GetUsersQueryParams } from '../../api/input-dto/get-users-query-params.input-dto';
+import {FilterQuery} from 'mongoose';
+import {PaginatedViewDto} from '../../../../core/dto/base.paginated.view-dto';
+import {GetUsersQueryParams} from '../../api/input-dto/get-users-query-params.input-dto';
+import {UserAuthInternalDto} from "../../../authorisation/dto/internal-dto/users.auth-internal-dto";
 
 @Injectable()
 export class UsersQueryRepository {
-  constructor(
-    @InjectModel(User.name)
-    private UserModel: UserModelType,
-  ) {}
-
-  async getByIdOrNotFoundFail(id: string): Promise<UserViewDto> {
-    const user = await this.UserModel.findOne({
-      _id: id,
-      deletedAt: null,
-    });
-
-    if (!user) {
-      throw new NotFoundException('user not found');
+    constructor(
+        @InjectModel(User.name)
+        private UserModel: UserModelType,
+    ) {
     }
 
-    return UserViewDto.mapToView(user);
-  }
+    async getByIdOrNotFoundFail(id: string): Promise<UserViewDto> {
+        const user = await this.UserModel.findOne({
+            _id: id,
+            deletedAt: null,
+        });
 
-  async getAll(
-    query: GetUsersQueryParams,
-  ): Promise<PaginatedViewDto<UserViewDto>> {
-    const filter: FilterQuery<User> = {
-      deletedAt: null,
+        if (!user) {
+            throw new NotFoundException('user not found');
+        }
+
+        return UserViewDto.mapToView(user);
     };
 
-    if (query.searchLoginTerm) {
-      filter.$or = filter.$or || [];
-      filter.$or.push({
-        login: { $regex: query.searchLoginTerm, $options: 'i' },
-      });
-    }
+    async getAll(
+        query: GetUsersQueryParams,
+    ): Promise<PaginatedViewDto<UserViewDto>> {
+        const filter: FilterQuery<User> = {
+            deletedAt: null,
+        };
 
-    if (query.searchEmailTerm) {
-      filter.$or = filter.$or || [];
-      filter.$or.push({
-        email: { $regex: query.searchEmailTerm, $options: 'i' },
-      });
-    }
+        if (query.searchLoginTerm) {
+            filter.$or = filter.$or || [];
+            filter.$or.push({
+                login: {$regex: query.searchLoginTerm, $options: 'i'},
+            });
+        }
 
-    const users = await this.UserModel.find(filter)
-      .sort({ [query.sortBy]: query.sortDirection })
-      .skip(query.calculateSkip())
-      .limit(query.pageSize);
+        if (query.searchEmailTerm) {
+            filter.$or = filter.$or || [];
+            filter.$or.push({
+                email: {$regex: query.searchEmailTerm, $options: 'i'},
+            });
+        }
 
-    const totalCount = await this.UserModel.countDocuments(filter);
+        const users = await this.UserModel.find(filter)
+            .sort({[query.sortBy]: query.sortDirection})
+            .skip(query.calculateSkip())
+            .limit(query.pageSize);
 
-    const items = users.map(UserViewDto.mapToView);
+        const totalCount = await this.UserModel.countDocuments(filter);
 
-    return PaginatedViewDto.mapToView({
-      items,
-      totalCount,
-      page: query.pageNumber,
-      size: query.pageSize,
-    });
-  }
+        const items = users.map(UserViewDto.mapToView);
+
+        return PaginatedViewDto.mapToView({
+            items,
+            totalCount,
+            page: query.pageNumber,
+            size: query.pageSize,
+        });
+    };
+
+
+    async findUserByLogin(loginOrEmail: string): Promise<UserAuthInternalDto | null> {
+        const user = await this.UserModel.findOne({
+            $or: [
+                {login: loginOrEmail},
+                {email: loginOrEmail}
+            ],
+            $and: [{deletedAt: null}]
+        })
+            .select('_id email passwordHash login isEmailConfirmed deletedAt name')
+            .lean();
+
+        
+        if (!user) {
+            return null;
+        }
+
+        return UserAuthInternalDto.mapToView(user);
+    };
 }
