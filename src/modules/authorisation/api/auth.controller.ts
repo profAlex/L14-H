@@ -1,4 +1,4 @@
-import {Controller, HttpCode, HttpStatus, Post, UseGuards} from '@nestjs/common';
+import {Controller, Get, HttpCode, HttpStatus, Post, UseGuards} from '@nestjs/common';
 import {LocalAuthGuard} from "../guards/local/local.auth-guard";
 import {ExtractUserIfExistsFromRequest} from "../decorators/extract-user-if-exists.decorator";
 import {UserContextDto} from "../guards/dto/user-context.dto";
@@ -11,6 +11,7 @@ export class AuthController {
         console.log('AuthController created');
     }
 
+    // Try login user to the system
     @HttpCode(HttpStatus.OK)
     @UseGuards(LocalAuthGuard)
     @Post('login')
@@ -19,6 +20,30 @@ export class AuthController {
         return this.authService.loginUser(user.id);
     };
 
-@HttpCode(HttpStatus.OK)
-@UseGuards(JwtAuthGuard)
+    // Password recovery via Email confirmation. Email should be sent with RecoveryCode inside
+    @Post('password-recovery')
+    passwordRecovery(){}
+
+    // Confirm Password recovery
+    @Post('new-password')
+    newPassword(){}
+
+    // Confirm registration
+    @Post('registration-confirmation')
+    registrationConfirmation(){}
+
+    // Registration in the system. Email with confirmation code will be send to passed email address
+    @Post('registration')
+    registration(){ }
+
+    // Resend confirmation registration Email if user exists
+    @Post('registration-email-resending')
+    registrationEmailResending(){}
+
+    // Get information about current user
+    @Get('me')
+    requestMe(){}
+
+// @HttpCode(HttpStatus.OK)
+// @UseGuards(JwtAuthGuard)
 }
