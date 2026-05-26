@@ -1,6 +1,6 @@
-import {Prop} from "@nestjs/mongoose";
+import {Prop, Schema} from "@nestjs/mongoose";
 
-
+@Schema()
 export class RateLimitLog {
     @Prop({type: String, required: true})
     deviceIp: string;
