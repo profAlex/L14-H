@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-export class GeneratorUtil {
+export class UUIDGeneratorUtil {
     static generateUUID(): string {
         return randomUUID();
     }

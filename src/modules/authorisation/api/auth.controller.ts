@@ -1,9 +1,10 @@
-import {Controller, Get, HttpCode, HttpStatus, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards} from '@nestjs/common';
 import {LocalAuthGuard} from "../guards/local/local.auth-guard";
 import {ExtractUserIfExistsFromRequest} from "../decorators/extract-user-if-exists.decorator";
 import {UserContextDto} from "../guards/dto/user-context.dto";
 import {AuthService} from "../application/auth.service";
 import {JwtAuthGuard} from "../guards/bearer/jwt.auth-guard";
+import {RegisterNewUserDto} from "./input-dto/register-new-user.input-dto";
 
 @Controller('auth')
 export class AuthController {
@@ -15,8 +16,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    login(@ExtractUserIfExistsFromRequest() user: UserContextDto,
-    ): Promise<{ accessToken: string }> {
+    async login(@ExtractUserIfExistsFromRequest() user: UserContextDto): Promise<{ accessToken: string }> {
         return this.authService.loginUser(user.id);
     };
 
@@ -33,8 +33,11 @@ export class AuthController {
     registrationConfirmation(){}
 
     // Registration in the system. Email with confirmation code will be send to passed email address
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration')
-    registration(){ }
+    async registration(@Body() body: RegisterNewUserDto): Promise<void> {
+        return this.authService.registerAttempt(body.login, body.password, body.email);
+    }
 
     // Resend confirmation registration Email if user exists
     @Post('registration-email-resending')

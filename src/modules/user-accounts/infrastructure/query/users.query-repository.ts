@@ -86,4 +86,15 @@ export class UsersQueryRepository {
 
         return UserAuthInternalDto.mapToView(user);
     };
+
+
+    async checkIfUserExists(login: string, email: string): Promise<boolean> {
+        return (await this.UserModel.countDocuments({
+            $or:[
+                {login: login},
+                {email: email}
+            ],
+            $and: [{deletedAt: null}]
+        }) > 0)
+    }
 }

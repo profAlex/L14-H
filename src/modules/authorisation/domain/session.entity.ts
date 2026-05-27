@@ -2,7 +2,7 @@ import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {HydratedDocument, Model} from "mongoose";
 import {CreateSessionDomainPayload} from "./payload/create-session.domain.payload";
 import {UpdateSessionDomainDto} from "./dto/update-session.domain.dto";
-import {GeneratorUtil} from "../../../core/uuid-generation/uuid.service";
+import {UUIDGeneratorUtil} from "../../../core/uuid-generation/uuid.service";
 
 export const refreshTokenLifeSpanMinutes = 10;
 
@@ -41,7 +41,7 @@ export class Session {
         const session = new this();
 
         session.userId = sessionPayload.userId;
-        session.deviceUUID = GeneratorUtil.generateUUID();
+        session.deviceUUID = UUIDGeneratorUtil.generateUUID();
         session.deviceName = sessionPayload.deviceName;
         session.deviceIP = sessionPayload.deviceIP;
 

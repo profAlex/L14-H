@@ -3,6 +3,11 @@ import {HydratedDocument, Model} from 'mongoose';
 import {UpdateUserDto} from '../dto/create-user.dto';
 import {CreateUserDomainDto} from './dto/create-user.domain.dto';
 import {Name, NameSchema} from './name.schema';
+import {UUIDGeneratorUtil} from "../../../core/uuid-generation/uuid.service";
+import {
+    EmailConfirmationInfo,
+    EmailConfirmationInfoSchema
+} from "../../authorisation/domain/email-confirmation-info.schema";
 
 //флаг timestemp автоматичеки добавляет поля upatedAt и createdAt
 /**
@@ -17,7 +22,7 @@ export class User {
      * @type {string}
      * @required
      */
-    @Prop({type: String, required: true})
+    @Prop({type: String, required: true, unique: true})
     login: string;
 
     /**
@@ -25,7 +30,7 @@ export class User {
      * @type {string}
      * @required
      */
-    @Prop({type: String, required: true})
+    @Prop({type: String, required: true, unique: true})
     passwordHash: string;
 
     /**
@@ -33,7 +38,7 @@ export class User {
      * @type {string}
      * @required
      */
-    @Prop({type: String, min: 5, required: true})
+    @Prop({type: String, min: 5, required: true, unique: true})
     email: string;
 
     /**
@@ -43,6 +48,10 @@ export class User {
      */
     @Prop({type: Boolean, required: true, default: false})
     isEmailConfirmed: boolean;
+
+
+    @Prop({type: EmailConfirmationInfoSchema, required: true})
+    emailConfirmationInfo: EmailConfirmationInfo;
 
     // @Prop(NameSchema) this variant from doc doesn't make validation for inner object
     @Prop({type: NameSchema})
@@ -86,6 +95,12 @@ export class User {
         user.passwordHash = dto.passwordHash;
         user.login = dto.login;
         user.isEmailConfirmed = false; // пользователь ВСЕГДА должен после регистрации подтверждить свой Email
+        user.emailConfirmationInfo = {
+            confirmationCode: dto.confirmationCode,
+            expirationDate: new Date(
+                new Date().setMinutes(new Date().getMinutes() + 30),
+            ),
+        };
         user.deletedAt = null;
         user.name = {
             firstName: 'firstName xxx',
