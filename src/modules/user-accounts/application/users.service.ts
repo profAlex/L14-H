@@ -1,50 +1,74 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { User, UserModelType } from '../domain/user.entity';
-import { CreateUserDto, UpdateUserDto } from '../dto/create-user.dto';
+import {Injectable, InternalServerErrorException} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {User, UserDocument, UserModelType} from '../domain/user.entity';
+import {CreateUserDto, UpdateUserDto} from '../dto/create-user.dto';
 import bcrypt from 'bcrypt';
-import { UsersRepository } from '../infrastructure/users.repository';
+import {UsersRepository} from '../infrastructure/users.repository';
+import {CryptoService} from "../../../core/bcrypt/bcrypt.service";
+import {UUIDGeneratorUtil} from "../../../core/uuid-generation/uuid.service";
+import {UsersQueryRepository} from "../infrastructure/query/users.query-repository";
+import {UserAuthInternalDto} from "../../authorisation/dto/internal-dto/users.auth-internal-dto";
 
 @Injectable()
 export class UsersService {
-  constructor(
-    //инжектирование модели в сервис через DI
-    @InjectModel(User.name)
-    private UserModel: UserModelType,
-    private usersRepository: UsersRepository,
-  ) {}
+    constructor(
+        //инжектирование модели в сервис через DI
+        @InjectModel(User.name) private UserModel: UserModelType,
+        private usersCommandRepository: UsersRepository,
+        private usersQueryRepository: UsersQueryRepository,
+        private cryptoService: CryptoService,
+    ) {
+    }
 
-  async createUser(dto: CreateUserDto): Promise<string> {
-    //TODO: move to bcrypt service
-    const passwordHash = await bcrypt.hash(dto.password, 10);
+    async createUser(dto: CreateUserDto): Promise<string> {
+        //TODO: move to bcrypt service
+        const passwordHash = await this.cryptoService.generateHash(dto.password);
+        if (!passwordHash) {
+            throw new InternalServerErrorException("Couldn't generate hash");
+        }
+        const confirmationCode = UUIDGeneratorUtil.generateUUID();
 
-    const user = this.UserModel.createInstance({
-      email: dto.email,
-      login: dto.login,
-      passwordHash: passwordHash,
-    });
+        const newUser = this.UserModel.createInstance({
+            login: dto.login,
+            email: dto.email,
+            passwordHash: passwordHash,
+            confirmationCode: confirmationCode
+        });
+        await this.usersCommandRepository.save(newUser);
 
-    await this.usersRepository.save(user);
+        return newUser._id.toString();
+    }
 
-    return user._id.toString();
-  }
-  async updateUser(id: string, dto: UpdateUserDto): Promise<string> {
-    const user = await this.usersRepository.findOrNotFoundFail(id);
+    async updateUser(id: string, dto: UpdateUserDto): Promise<string> {
+        const user = await this.usersCommandRepository.findOrNotFoundFail(id);
 
-    // не присваиваем св-ва сущностям напрямую в сервисах! даже для изменения одного св-ва
-    // создаём метод
-    user.update(dto); // change detection
+        // не присваиваем св-ва сущностям напрямую в сервисах! даже для изменения одного св-ва
+        // создаём метод
+        user.update(dto); // change detection
 
-    await this.usersRepository.save(user);
+        await this.usersCommandRepository.save(user);
 
-    return user._id.toString();
-  }
+        return user._id.toString();
+    }
 
-  async deleteUser(id: string) {
-    const user = await this.usersRepository.findOrNotFoundFail(id);
+    async deleteUser(id: string) {
+        const user = await this.usersCommandRepository.findOrNotFoundFail(id);
 
-    user.makeDeleted();
+        user.makeDeleted();
 
-    await this.usersRepository.save(user);
-  }
+        await this.usersCommandRepository.save(user);
+    }
+
+
+    async findOrNotFoundFail(id: string): Promise<UserDocument> {
+        return this.usersCommandRepository.findOrNotFoundFail(id);
+    }
+
+    async checkIfUserExists(login: string, email: string): Promise<boolean> {
+        return this.usersQueryRepository.checkIfUserExists(login, email);
+    }
+
+    async findUserByLogin(loginOrEmail: string): Promise<UserAuthInternalDto | null> {
+        return this.usersQueryRepository.findUserByLogin(loginOrEmail);
+    }
 }

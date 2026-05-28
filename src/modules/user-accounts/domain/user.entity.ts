@@ -8,6 +8,7 @@ import {
     EmailConfirmationInfo,
     EmailConfirmationInfoSchema
 } from "../../authorisation/domain/email-confirmation-info.schema";
+import {BadRequestException} from "@nestjs/common";
 
 //флаг timestemp автоматичеки добавляет поля upatedAt и createdAt
 /**
@@ -134,6 +135,16 @@ export class User {
             this.isEmailConfirmed = false;
             this.email = dto.email;
         }
+    }
+
+    confirmEmail() {
+        if(this.isEmailConfirmed){
+            throw new BadRequestException('Email is already confirmed!');
+        }
+
+        this.isEmailConfirmed = true;
+
+        this.emailConfirmationInfo.confirmationCode = null;
     }
 }
 
