@@ -59,6 +59,9 @@ export class UsersService {
         await this.usersCommandRepository.save(user);
     }
 
+    async saveUser(user: UserDocument): Promise<void> {
+        await this.usersCommandRepository.save(user);
+    }
 
     async findOrNotFoundFail(id: string): Promise<UserDocument> {
         return this.usersCommandRepository.findOrNotFoundFail(id);
@@ -70,5 +73,9 @@ export class UsersService {
 
     async findUserByLogin(loginOrEmail: string): Promise<UserAuthInternalDto | null> {
         return this.usersQueryRepository.findUserByLogin(loginOrEmail);
+    }
+
+    async findUserByConfirmationCode(confirmationCode: string): Promise<UserDocument | null> {
+        return this.usersQueryRepository.findUserByConfirmationCode(confirmationCode);
     }
 }

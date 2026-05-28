@@ -1,4 +1,4 @@
-import {User, UserModelType} from '../../domain/user.entity';
+import {User, UserDocument, UserModelType} from '../../domain/user.entity';
 import {InjectModel} from '@nestjs/mongoose';
 import {UserViewDto} from '../../api/view-dto/users.view-dto';
 import {Injectable, NotFoundException} from '@nestjs/common';
@@ -79,7 +79,7 @@ export class UsersQueryRepository {
             .select('_id email passwordHash login isEmailConfirmed deletedAt name')
             .lean();
 
-        
+
         if (!user) {
             return null;
         }
@@ -90,11 +90,21 @@ export class UsersQueryRepository {
 
     async checkIfUserExists(login: string, email: string): Promise<boolean> {
         return (await this.UserModel.countDocuments({
-            $or:[
+            $or: [
                 {login: login},
                 {email: email}
             ],
             $and: [{deletedAt: null}]
         }) > 0)
+    }
+
+    async findUserByConfirmationCode(confirmationCode: string): Promise<UserDocument | null> {
+        return this.UserModel.findOne({
+                $and: [
+                    {"emailConfirmationInfo.confirmationCode": confirmationCode},
+                    {"emailConfirmationInfo.expirationDate": {$gte: new Date()}}, //Date.now() в JavaScript возвращает число (таймстамп в миллисекундах, например 1716924800000). Но в схеме Mongoose поле expirationDate имеет тип Date (хранится как полноценный ISODate объект).
+                ]
+            }
+        )
     }
 }

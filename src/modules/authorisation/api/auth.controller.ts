@@ -3,8 +3,8 @@ import {LocalAuthGuard} from "../guards/local/local.auth-guard";
 import {ExtractUserIfExistsFromRequest} from "../decorators/extract-user-if-exists.decorator";
 import {UserContextDto} from "../guards/dto/user-context.dto";
 import {AuthService} from "../application/auth.service";
-import {JwtAuthGuard} from "../guards/bearer/jwt.auth-guard";
 import {RegisterNewUserDto} from "./input-dto/register-new-user.input-dto";
+import {RegistrationConfirmationInputDto} from "./input-dto/registration-confirmation.input-dto";
 
 @Controller('auth')
 export class AuthController {
@@ -29,8 +29,11 @@ export class AuthController {
     newPassword(){}
 
     // Confirm registration
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration-confirmation')
-    registrationConfirmation(){}
+    registrationConfirmation(@Body() body: RegistrationConfirmationInputDto): Promise<void>{
+        return this.authService.confirmRegistration(body.code);
+    }
 
     // Registration in the system. Email with confirmation code will be send to passed email address
     @HttpCode(HttpStatus.NO_CONTENT)

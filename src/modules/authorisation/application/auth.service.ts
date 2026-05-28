@@ -76,6 +76,18 @@ export class AuthService {
         }
 
         await this.emailService.sendConfirmationEmail(sentEmail, user.emailConfirmationInfo.confirmationCode);
+    };
+
+    async confirmRegistration(sentCode: string): Promise<void> {
+        const userToBeConfirmed = await this.usersService.findUserByConfirmationCode(sentCode);
+
+        if (!userToBeConfirmed) {
+            throw new BadRequestException("Email confirmation is wrong, outdated or not found.");
+        }
+
+        userToBeConfirmed.confirmEmail();
+
+        await this.usersService.saveUser(userToBeConfirmed);
     }
 
 }
