@@ -107,4 +107,10 @@ export class UsersQueryRepository {
             }
         )
     }
+
+    async findConfirmedUserByEmail(sentEmail: string): Promise<UserDocument | null> {
+        return this.UserModel.findOne({
+            $and: [{email: sentEmail}, {isEmailConfirmed: true}, {deletedAt: null}]
+        })
+    }
 }

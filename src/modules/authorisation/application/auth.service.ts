@@ -4,6 +4,7 @@ import {CryptoService} from "../../../core/bcrypt/bcrypt.service";
 import {JwtService} from "@nestjs/jwt";
 import {EmailService} from "../../notifications/email.service";
 import {UsersService} from "../../user-accounts/application/users.service";
+import {UUIDGeneratorUtil} from "../../../core/uuid-generation/uuid.service";
 
 @Injectable()
 export class AuthService {
@@ -88,6 +89,26 @@ export class AuthService {
         userToBeConfirmed.confirmEmail();
 
         await this.usersService.saveUser(userToBeConfirmed);
+    };
+
+
+    async passwordRecoveryByEmail(sentEmail: string): Promise<void> {
+        const user = await this.usersService.findConfirmedUserByEmail(sentEmail);
+        if (!user) {
+            // Returning "success". Even if current email is not registered (for prevent user's email detection)
+            return;
+        }
+
+        //TODO: следующие три строчки можно вынести и в отдельный метод внутри схемы юзера
+        const recoveryCode = UUIDGeneratorUtil.generateUUID();
+
+        user.recoveryCode = recoveryCode;
+        user.recoveryCodeExpirationDate = new Date(
+            new Date().setMinutes(new Date().getMinutes() + 30)); //TODO: 30 вынести в environment переменную
+
+        await this.usersService.saveUser(user);
+
+        await this.emailService.sendRecoveryEmail(sentEmail, recoveryCode);
     }
 
 }

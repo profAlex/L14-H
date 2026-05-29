@@ -5,6 +5,7 @@ import {UserContextDto} from "../guards/dto/user-context.dto";
 import {AuthService} from "../application/auth.service";
 import {RegisterNewUserDto} from "./input-dto/register-new-user.input-dto";
 import {RegistrationConfirmationInputDto} from "./input-dto/registration-confirmation.input-dto";
+import {PasswordRecoveryInputDto} from "./input-dto/password-recovery.input-dto";
 
 @Controller('auth')
 export class AuthController {
@@ -21,17 +22,20 @@ export class AuthController {
     };
 
     // Password recovery via Email confirmation. Email should be sent with RecoveryCode inside
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Post('password-recovery')
-    passwordRecovery(){}
+    async passwordRecovery(@Body() body: PasswordRecoveryInputDto): Promise<void> {
+        return this.authService.passwordRecoveryByEmail(body.email);
+    }
 
     // Confirm Password recovery
     @Post('new-password')
-    newPassword(){}
+    async newPassword(){}
 
     // Confirm registration
     @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration-confirmation')
-    registrationConfirmation(@Body() body: RegistrationConfirmationInputDto): Promise<void>{
+    async registrationConfirmation(@Body() body: RegistrationConfirmationInputDto): Promise<void>{
         return this.authService.confirmRegistration(body.code);
     }
 
@@ -43,12 +47,13 @@ export class AuthController {
     }
 
     // Resend confirmation registration Email if user exists
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration-email-resending')
-    registrationEmailResending(){}
+    async registrationEmailResending(){}
 
     // Get information about current user
     @Get('me')
-    requestMe(){}
+    async requestMe(){}
 
 // @HttpCode(HttpStatus.OK)
 // @UseGuards(JwtAuthGuard)

@@ -12,4 +12,11 @@ export class EmailService {
             to: email,
         });
     }
+
+    async sendRecoveryEmail(email: string, recoveryCode: string): Promise<void> {
+        await this.mailerService.sendMail({
+            text: `proceed to password recovery via link https://some-front.com/confirm-registration?code=${recoveryCode}`,
+            to: email,
+        });
+    }
 }

@@ -74,6 +74,11 @@ export class User {
     @Prop({type: Date, default: null})
     deletedAt: Date | null;
 
+    @Prop({ type: String, required: false, default: null })
+    recoveryCode: string | null;
+
+    @Prop({ type: Date, required: false, default: null })
+    recoveryCodeExpirationDate: Date | null;
     /**
      * Virtual property to get the stringified ObjectId
      * @returns {string} The string representation of the ID
@@ -99,7 +104,7 @@ export class User {
         user.emailConfirmationInfo = {
             confirmationCode: dto.confirmationCode,
             expirationDate: new Date(
-                new Date().setMinutes(new Date().getMinutes() + 30),
+                new Date().setMinutes(new Date().getMinutes() + 30), //TODO: 30 вынести в environment переменную
             ),
         };
         user.deletedAt = null;
@@ -107,6 +112,8 @@ export class User {
             firstName: 'firstName xxx',
             lastName: 'lastName yyy',
         };
+        user.recoveryCode = null;
+        user.recoveryCodeExpirationDate = null;
 
         return user as UserDocument;
     }
