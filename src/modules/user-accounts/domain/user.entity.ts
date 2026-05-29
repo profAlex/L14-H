@@ -74,7 +74,7 @@ export class User {
     @Prop({type: Date, default: null})
     deletedAt: Date | null;
 
-    @Prop({ type: String, required: false, default: null })
+    @Prop({ type: String, required: false, default: null, unique: true })
     recoveryCode: string | null;
 
     @Prop({ type: Date, required: false, default: null })
@@ -152,6 +152,21 @@ export class User {
         this.isEmailConfirmed = true;
 
         this.emailConfirmationInfo.confirmationCode = null;
+    }
+
+    generateRecoveryCode(recoveryCode: string) {
+        if (this.isEmailConfirmed) {
+            this.recoveryCode = recoveryCode;
+            this.recoveryCodeExpirationDate = new Date(
+                new Date().setMinutes(new Date().getMinutes() + 30)
+            );
+        }
+    }
+
+    updatePasswordHash(newPasswordHash: string) {
+        this.passwordHash = newPasswordHash;
+        this.recoveryCodeExpirationDate = null;
+        this.recoveryCode = null;
     }
 }
 

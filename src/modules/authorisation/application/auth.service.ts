@@ -37,11 +37,13 @@ export class AuthService {
         return {id: user.id};
     };
 
+
     async loginUser(userId: string): Promise<{ accessToken: string }> {
         const accessToken = await this.jwtService.signAsync({id: userId} as UserContextDto);
 
         return {accessToken: accessToken};
     };
+
 
     async registerAttempt(sentLogin: string, sentPassword: string, sentEmail: string): Promise<void> {
         const checkIfUserCredsAvaliable = await this.usersService.checkIfUserExists(sentLogin, sentEmail);
@@ -73,11 +75,12 @@ export class AuthService {
         // await this.usersCommandRepository.save(newUser);
 
         if(!user.emailConfirmationInfo.confirmationCode){
-            throw new BadRequestException("Email confirmation code was not generated!");
+            throw new InternalServerErrorException("Email confirmation code was not generated!");
         }
 
         await this.emailService.sendConfirmationEmail(sentEmail, user.emailConfirmationInfo.confirmationCode);
     };
+
 
     async confirmRegistration(sentCode: string): Promise<void> {
         const userToBeConfirmed = await this.usersService.findUserByConfirmationCode(sentCode);
@@ -99,16 +102,29 @@ export class AuthService {
             return;
         }
 
-        //TODO: следующие три строчки можно вынести и в отдельный метод внутри схемы юзера
         const recoveryCode = UUIDGeneratorUtil.generateUUID();
-
-        user.recoveryCode = recoveryCode;
-        user.recoveryCodeExpirationDate = new Date(
-            new Date().setMinutes(new Date().getMinutes() + 30)); //TODO: 30 вынести в environment переменную
+        user.generateRecoveryCode(recoveryCode);
 
         await this.usersService.saveUser(user);
 
         await this.emailService.sendRecoveryEmail(sentEmail, recoveryCode);
-    }
+    };
 
+
+    async applyNewPassword(sentNewPassword: string, sentRecoveryCode: string): Promise<void> {
+        const user = await this.usersService.findUserByRecoveryCode(sentRecoveryCode)
+        if (!user) {
+            throw new BadRequestException("Recovery code is wrong or expired.");
+        }
+
+        const newPasswordHash = await this.cryptoService.generateHash(sentNewPassword);
+        if(!newPasswordHash){
+            throw new InternalServerErrorException("Password hash wasn't generated!");
+        }
+
+        user.updatePasswordHash(newPasswordHash);
+
+        await this.usersService.saveUser(user);
+
+    }
 }

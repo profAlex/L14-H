@@ -79,7 +79,11 @@ export class UsersService {
         return this.usersQueryRepository.findUserByConfirmationCode(confirmationCode);
     }
 
-    async findConfirmedUserByEmail(sentEmail:string):Promise<UserDocument | null> {
+    async findConfirmedUserByEmail(sentEmail: string): Promise<UserDocument | null> {
         return this.usersQueryRepository.findConfirmedUserByEmail(sentEmail);
+    }
+
+    async findUserByRecoveryCode(sentRecoveryCode: string): Promise<UserDocument | null> {
+        return this.usersQueryRepository.findUserByRecoveryCode(sentRecoveryCode);
     }
 }

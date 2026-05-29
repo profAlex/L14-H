@@ -103,6 +103,7 @@ export class UsersQueryRepository {
                 $and: [
                     {"emailConfirmationInfo.confirmationCode": confirmationCode},
                     {"emailConfirmationInfo.expirationDate": {$gte: new Date()}}, //Date.now() в JavaScript возвращает число (таймстамп в миллисекундах, например 1716924800000). Но в схеме Mongoose поле expirationDate имеет тип Date (хранится как полноценный ISODate объект).
+                    {deletedAt: null}
                 ]
             }
         )
@@ -111,6 +112,12 @@ export class UsersQueryRepository {
     async findConfirmedUserByEmail(sentEmail: string): Promise<UserDocument | null> {
         return this.UserModel.findOne({
             $and: [{email: sentEmail}, {isEmailConfirmed: true}, {deletedAt: null}]
+        })
+    }
+
+    async findUserByRecoveryCode(sentRevoceryCode: string): Promise<UserDocument | null> {
+        return this.UserModel.findOne({
+            $and: [{recoveryCode: sentRevoceryCode}, {recoveryCodeExpirationDate: {$gte: new Date()}}, {deletedAt: null}]
         })
     }
 }

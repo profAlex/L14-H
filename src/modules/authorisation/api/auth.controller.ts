@@ -6,6 +6,7 @@ import {AuthService} from "../application/auth.service";
 import {RegisterNewUserDto} from "./input-dto/register-new-user.input-dto";
 import {RegistrationConfirmationInputDto} from "./input-dto/registration-confirmation.input-dto";
 import {PasswordRecoveryInputDto} from "./input-dto/password-recovery.input-dto";
+import {NewPasswordInputDto} from "./input-dto/new-pasword.input-dto";
 
 @Controller('auth')
 export class AuthController {
@@ -29,8 +30,11 @@ export class AuthController {
     }
 
     // Confirm Password recovery
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Post('new-password')
-    async newPassword(){}
+    async newPassword(@Body() body: NewPasswordInputDto): Promise<void> {
+        return this.authService.applyNewPassword(body.newPassword, body.recoveryCode);
+    }
 
     // Confirm registration
     @HttpCode(HttpStatus.NO_CONTENT)
