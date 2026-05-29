@@ -126,5 +126,22 @@ export class AuthService {
 
         await this.usersService.saveUser(user);
 
+    };
+
+
+    async resendRegistrationEmail(sentEmail: string): Promise<void> {
+        const user = await this.usersService.findNotConfirmedByEmail(sentEmail);
+        if(!user) {
+            // Returning "success". Even if current email is not registered (for prevent user's email detection)
+            return;
+            // throw new BadRequestException("Email confirmation is wrong or expired.");
+        }
+
+        const confirmationCode = UUIDGeneratorUtil.generateUUID();
+        user.generateConfirmationCode(confirmationCode);
+
+        await this.usersService.saveUser(user);
+
+        await this.emailService.sendConfirmationEmail(sentEmail, confirmationCode);
     }
 }

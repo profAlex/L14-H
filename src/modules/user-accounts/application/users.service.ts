@@ -86,4 +86,8 @@ export class UsersService {
     async findUserByRecoveryCode(sentRecoveryCode: string): Promise<UserDocument | null> {
         return this.usersQueryRepository.findUserByRecoveryCode(sentRecoveryCode);
     }
+
+    async findNotConfirmedByEmail(sentEmail: string): Promise<UserDocument | null> {
+        return this.usersQueryRepository.findNotConfirmedByEmail(sentEmail);
+    }
 }

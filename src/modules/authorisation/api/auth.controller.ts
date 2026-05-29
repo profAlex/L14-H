@@ -7,6 +7,7 @@ import {RegisterNewUserDto} from "./input-dto/register-new-user.input-dto";
 import {RegistrationConfirmationInputDto} from "./input-dto/registration-confirmation.input-dto";
 import {PasswordRecoveryInputDto} from "./input-dto/password-recovery.input-dto";
 import {NewPasswordInputDto} from "./input-dto/new-pasword.input-dto";
+import {RegistrationEmailResendingInputDto} from "./input-dto/registration-email-resending.input-dto";
 
 @Controller('auth')
 export class AuthController {
@@ -53,7 +54,9 @@ export class AuthController {
     // Resend confirmation registration Email if user exists
     @HttpCode(HttpStatus.NO_CONTENT)
     @Post('registration-email-resending')
-    async registrationEmailResending(){}
+    async registrationEmailResending(@Body() body:RegistrationEmailResendingInputDto){
+        return this.authService.resendRegistrationEmail(body.email);
+    }
 
     // Get information about current user
     @Get('me')

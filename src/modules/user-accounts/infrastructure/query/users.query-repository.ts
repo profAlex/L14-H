@@ -120,4 +120,10 @@ export class UsersQueryRepository {
             $and: [{recoveryCode: sentRevoceryCode}, {recoveryCodeExpirationDate: {$gte: new Date()}}, {deletedAt: null}]
         })
     }
+
+    async findNotConfirmedByEmail(sentEmail: string): Promise<UserDocument | null> {
+        return this.UserModel.findOne({
+            $and: [{email: sentEmail}, {isEmailConfirmed: false}, {deletedAt: null}]
+        })
+    }
 }

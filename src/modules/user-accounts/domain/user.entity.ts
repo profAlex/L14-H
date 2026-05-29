@@ -168,6 +168,15 @@ export class User {
         this.recoveryCodeExpirationDate = null;
         this.recoveryCode = null;
     }
+
+    generateConfirmationCode(newConfirmationCode: string) {
+        if(!this.isEmailConfirmed) {
+            this["emailConfirmationInfo.confirmationCode"] = newConfirmationCode;
+            this["emailConfirmationInfo.expirationDate"] = new Date(
+                new Date().setMinutes(new Date().getMinutes() + 30), //TODO: 30 вынести в environment переменную
+            )
+        }
+    }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
