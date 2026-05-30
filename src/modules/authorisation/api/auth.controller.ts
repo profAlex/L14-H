@@ -10,6 +10,7 @@ import {NewPasswordInputDto} from "./input-dto/new-pasword.input-dto";
 import {RegistrationEmailResendingInputDto} from "./input-dto/registration-email-resending.input-dto";
 import {JwtAuthGuard} from "../guards/bearer/jwt.auth-guard";
 import {MeViewDto} from "./view-dto/me.view-dto";
+import {UserLoginInputDto} from "../../user-accounts/api/input-dto/login-user.input-dto";
 
 @Controller('auth')
 export class AuthController {
@@ -21,7 +22,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    async login(@ExtractUserIfExistsFromRequest() user: UserContextDto): Promise<{ accessToken: string }> {
+    async login(@Body() body: UserLoginInputDto, @ExtractUserIfExistsFromRequest() user: UserContextDto): Promise<{ accessToken: string }> {
         return this.authService.loginUser(user.id);
     };
 
@@ -67,7 +68,4 @@ export class AuthController {
     async requestMe(@ExtractUserIfExistsFromRequest() user: UserContextDto): Promise<MeViewDto>{
         return this.authService.getMeInfo(user.id);
     }
-
-// @HttpCode(HttpStatus.OK)
-// @UseGuards(JwtAuthGuard)
 }

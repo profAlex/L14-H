@@ -8,7 +8,7 @@ import {
     Param,
     Post,
     Put,
-    Query,
+    Query, UseGuards,
 } from '@nestjs/common';
 import {UsersQueryRepository} from '../infrastructure/query/users.query-repository';
 import {UserViewDto} from './view-dto/users.view-dto';
@@ -18,6 +18,7 @@ import {PaginatedViewDto} from '../../../core/dto/base.paginated.view-dto';
 import {ApiParam, ApiTags} from '@nestjs/swagger';
 import {UpdateUserInputDto} from './input-dto/update-user.input-dto';
 import {GetUsersQueryParams} from './input-dto/get-users-query-params.input-dto';
+import {BasicAuthGuard} from "../../authorisation/guards/basic/basic.auth-guard";
 
 @ApiTags('Users endpoint')
 @Controller('users')
@@ -29,6 +30,7 @@ export class UsersController {
         console.log('UsersController created');
     }
 
+    @UseGuards(BasicAuthGuard)
     @ApiParam({name: 'id'}) //для сваггера
     @Get(':id') //users/232342-sdfssdf-23234323
     async getById(@Param('id') id: string): Promise<UserViewDto> {
@@ -37,6 +39,7 @@ export class UsersController {
         return this.usersQueryRepository.getByIdOrNotFoundFail(id);
     }
 
+    @UseGuards(BasicAuthGuard)
     @Get()
     async getAll(
         @Query() query: GetUsersQueryParams,
@@ -44,6 +47,8 @@ export class UsersController {
         return this.usersQueryRepository.getAll(query);
     }
 
+
+    @UseGuards(BasicAuthGuard)
     @Post()
     async createUser(@Body() body: CreateUserInputDto): Promise<UserViewDto> {
         const userId = await this.usersService.createUser(body);
@@ -51,6 +56,8 @@ export class UsersController {
         return this.usersQueryRepository.getByIdOrNotFoundFail(userId);
     }
 
+
+    @UseGuards(BasicAuthGuard)
     @Put(':id')
     async updateUser(
         @Param('id') id: string,
@@ -61,6 +68,8 @@ export class UsersController {
         return this.usersQueryRepository.getByIdOrNotFoundFail(userId);
     }
 
+
+    @UseGuards(BasicAuthGuard)
     @ApiParam({name: 'id'}) //для сваггера
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
