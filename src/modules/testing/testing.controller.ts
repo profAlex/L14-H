@@ -13,9 +13,20 @@ export class TestingController {
   async deleteAll() {
     const collections = await this.databaseConnection.listCollections();
 
+    // const promises = collections.map((collection) =>
+    //   this.databaseConnection.collection(collection.name).deleteMany({}),
+    // );
+
     const promises = collections.map((collection) =>
-      this.databaseConnection.collection(collection.name).deleteMany({}),
+        // Вместо deleteMany({}) мы полностью сносим коллекцию вместе с индексами
+        this.databaseConnection.collection(collection.name).drop()
+            .catch(err => {
+              // На случай, если коллекция уже была удалена или пуста,
+              // ловим ошибку, чтобы Promise.all не упал
+              console.log(`Коллекция ${collection.name} не смогла удалиться:`, err.message);
+            })
     );
+
     await Promise.all(promises);
 
     return {

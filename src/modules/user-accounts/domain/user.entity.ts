@@ -74,7 +74,7 @@ export class User {
     @Prop({type: Date, default: null})
     deletedAt: Date | null;
 
-    @Prop({ type: String, required: false, default: null, unique: true })
+    @Prop({ type: String, required: false, default: null, unique: true, sparse: true,})
     recoveryCode: string | null;
 
     @Prop({ type: Date, required: false, default: null })
