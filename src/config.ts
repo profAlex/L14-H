@@ -19,7 +19,7 @@ const DEFAULT_MAIL_HOST = "smtp.yandex.ru";
 const DEFAULT_MAIL_LOGIN = "geniusb198";
 const DEFAULT_MAIL_PASS = "ywzsvifsdfgfobsbmqsp";
 
-const DEFAULT_MONGO_URI = "";
+const DEFAULT_MONGO_URI = "mongodb+srv://bolly198:bN0Ew0gUNFwqH7VL@newlearningcluster.1tnov1c.mongodb.net/?appName=NewLearningCluster";
 
 
 
