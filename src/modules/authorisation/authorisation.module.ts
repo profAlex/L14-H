@@ -8,26 +8,33 @@ import {CryptoService} from "../../core/bcrypt/bcrypt.service";
 import {AuthService} from "./application/auth.service";
 import {LocalStrategy} from "./guards/local/local.strategy";
 import {SecurityDevicesController} from "./api/security-devices.controller";
-import {AuthQueryRepository} from "../user-accounts/infrastructure/query/auth.query-repository";
 import {JwtStrategy} from "./guards/bearer/jwt.strategy";
-import {BasicStrategy} from "passport-http";
+import {UsersService} from "../user-accounts/application/users.service";
+import {MongooseModule} from "@nestjs/mongoose";
+import {User, UserSchema} from "../user-accounts/domain/user.entity";
+import {UsersRepository} from "../user-accounts/infrastructure/users.repository";
+import {UsersQueryRepository} from "../user-accounts/infrastructure/query/users.query-repository";
 
 @Module({
-    imports: [JwtModule.register({
+    imports: [
+        JwtModule.register({
         secret: envConfig.accessTokenSecret,
         signOptions: {expiresIn: '60m'}
     }),
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         NotificationsModule,
-        UserAccountsModule
+        UserAccountsModule,
     ],
     controllers: [AuthController, SecurityDevicesController],
     providers: [AuthService,
-        AuthQueryRepository,
         // SecurityDevicesQueryRepository,
         LocalStrategy, // Паспортная стратегия для логина
         JwtStrategy,   // Паспортная стратегия для гвардов
-        BasicStrategy,
-        CryptoService
+        // BasicStrategy,
+        CryptoService,
+        UsersService,
+        UsersRepository,
+        UsersQueryRepository,
     ],
     exports: [],
 })
