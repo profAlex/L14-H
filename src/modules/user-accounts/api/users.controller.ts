@@ -19,6 +19,7 @@ import {ApiParam, ApiTags} from '@nestjs/swagger';
 import {UpdateUserInputDto} from './input-dto/update-user.input-dto';
 import {GetUsersQueryParams} from './input-dto/get-users-query-params.input-dto';
 import {BasicAuthGuard} from "../../authorisation/guards/basic/basic.auth-guard";
+import {IdParamInputDto} from "./input-dto/id-param.input-dto";
 
 @ApiTags('Users endpoint')
 @Controller('users')
@@ -33,10 +34,10 @@ export class UsersController {
     @UseGuards(BasicAuthGuard)
     @ApiParam({name: 'id'}) //для сваггера
     @Get(':id') //users/232342-sdfssdf-23234323
-    async getById(@Param('id') id: string): Promise<UserViewDto> {
+    async getById(@Param() idParam: IdParamInputDto): Promise<UserViewDto> {
         // можем и чаще так и делаем возвращать Promise из action. Сам NestJS будет дожидаться, когда
         // промис зарезолвится и затем NestJS вернёт результат клиенту
-        return this.usersQueryRepository.getByIdOrNotFoundFail(id);
+        return this.usersQueryRepository.getByIdOrNotFoundFail(idParam.id);
     }
 
     @UseGuards(BasicAuthGuard)
@@ -60,10 +61,10 @@ export class UsersController {
     @UseGuards(BasicAuthGuard)
     @Put(':id')
     async updateUser(
-        @Param('id') id: string,
+        @Param() idParam: IdParamInputDto,
         @Body() body: UpdateUserInputDto,
     ): Promise<UserViewDto> {
-        const userId = await this.usersService.updateUser(id, body);
+        const userId = await this.usersService.updateUser(idParam.id, body);
 
         return this.usersQueryRepository.getByIdOrNotFoundFail(userId);
     }
@@ -73,7 +74,7 @@ export class UsersController {
     @ApiParam({name: 'id'}) //для сваггера
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
-    async deleteUser(@Param('id') id: string): Promise<void> {
-        return this.usersService.deleteUser(id);
+    async deleteUser(@Param() idParam: IdParamInputDto): Promise<void> {
+        return this.usersService.deleteUser(idParam.id);
     }
 }
