@@ -7,6 +7,7 @@ import {FilterQuery} from 'mongoose';
 import {PaginatedViewDto} from '../../../../core/dto/base.paginated.view-dto';
 import {GetUsersQueryParams} from '../../api/input-dto/get-users-query-params.input-dto';
 import {UserAuthInternalDto} from "../../../authorisation/dto/internal-dto/users.auth-internal-dto";
+import {MeViewDto} from "../../../authorisation/api/view-dto/me.view-dto";
 
 @Injectable()
 export class UsersQueryRepository {
@@ -28,6 +29,22 @@ export class UsersQueryRepository {
 
         return UserViewDto.mapToView(user);
     };
+
+
+    async getMeByIdOrNotFoundFail(id: string): Promise<MeViewDto> {
+        const user = await this.UserModel.findOne({
+            _id: id,
+            deletedAt: null,
+        })
+            .lean();
+
+        if (!user) {
+            throw new NotFoundException('user not found');
+        }
+
+        return MeViewDto.mapToView(user);
+    };
+
 
     async getAll(
         query: GetUsersQueryParams,

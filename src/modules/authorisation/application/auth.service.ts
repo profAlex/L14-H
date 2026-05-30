@@ -5,6 +5,7 @@ import {JwtService} from "@nestjs/jwt";
 import {EmailService} from "../../notifications/email.service";
 import {UsersService} from "../../user-accounts/application/users.service";
 import {UUIDGeneratorUtil} from "../../../core/uuid-generation/uuid.service";
+import {MeViewDto} from "../api/view-dto/me.view-dto";
 
 @Injectable()
 export class AuthService {
@@ -143,5 +144,10 @@ export class AuthService {
         await this.usersService.saveUser(user);
 
         await this.emailService.sendConfirmationEmail(sentEmail, confirmationCode);
+    };
+
+
+    async getMeInfo(sentId: string): Promise<MeViewDto> {
+        return this.usersService.getMeByIdOrNotFoundFail(sentId);
     }
 }

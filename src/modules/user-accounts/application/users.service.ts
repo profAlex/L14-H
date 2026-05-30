@@ -8,6 +8,7 @@ import {CryptoService} from "../../../core/bcrypt/bcrypt.service";
 import {UUIDGeneratorUtil} from "../../../core/uuid-generation/uuid.service";
 import {UsersQueryRepository} from "../infrastructure/query/users.query-repository";
 import {UserAuthInternalDto} from "../../authorisation/dto/internal-dto/users.auth-internal-dto";
+import {MeViewDto} from "../../authorisation/api/view-dto/me.view-dto";
 
 @Injectable()
 export class UsersService {
@@ -89,5 +90,9 @@ export class UsersService {
 
     async findNotConfirmedByEmail(sentEmail: string): Promise<UserDocument | null> {
         return this.usersQueryRepository.findNotConfirmedByEmail(sentEmail);
+    }
+
+    async getMeByIdOrNotFoundFail(id: string): Promise<MeViewDto> {
+        return this.usersQueryRepository.getMeByIdOrNotFoundFail(id);
     }
 }

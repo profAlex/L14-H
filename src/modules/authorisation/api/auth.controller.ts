@@ -8,6 +8,8 @@ import {RegistrationConfirmationInputDto} from "./input-dto/registration-confirm
 import {PasswordRecoveryInputDto} from "./input-dto/password-recovery.input-dto";
 import {NewPasswordInputDto} from "./input-dto/new-pasword.input-dto";
 import {RegistrationEmailResendingInputDto} from "./input-dto/registration-email-resending.input-dto";
+import {JwtAuthGuard} from "../guards/bearer/jwt.auth-guard";
+import {MeViewDto} from "./view-dto/me.view-dto";
 
 @Controller('auth')
 export class AuthController {
@@ -59,8 +61,12 @@ export class AuthController {
     }
 
     // Get information about current user
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(JwtAuthGuard)
     @Get('me')
-    async requestMe(){}
+    async requestMe(@ExtractUserIfExistsFromRequest() user: UserContextDto): Promise<MeViewDto>{
+        return this.authService.getMeInfo(user.id);
+    }
 
 // @HttpCode(HttpStatus.OK)
 // @UseGuards(JwtAuthGuard)

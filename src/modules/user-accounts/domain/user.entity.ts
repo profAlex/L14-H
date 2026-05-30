@@ -170,11 +170,11 @@ export class User {
     }
 
     generateConfirmationCode(newConfirmationCode: string) {
-        if(!this.isEmailConfirmed) {
-            this["emailConfirmationInfo.confirmationCode"] = newConfirmationCode;
-            this["emailConfirmationInfo.expirationDate"] = new Date(
-                new Date().setMinutes(new Date().getMinutes() + 30), //TODO: 30 вынести в environment переменную
-            )
+        if (!this.isEmailConfirmed) {
+            this.emailConfirmationInfo.confirmationCode = newConfirmationCode;
+            this.emailConfirmationInfo.expirationDate = new Date(
+                new Date().setMinutes(new Date().getMinutes() + 30)
+            );
         }
     }
 }
