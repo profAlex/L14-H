@@ -9,6 +9,9 @@ import {CoreModule} from './core/core.module';
 import {envConfig} from "./config";
 import {AuthorisationModule} from "./modules/authorisation/authorisation.module";
 import {NotificationsModule} from "./modules/notifications/notifications.module";
+import {APP_FILTER} from "@nestjs/core";
+import {AllHttpExceptionsFilter} from "./core/exceptions/filters/all-exceptions.filter";
+import {DomainHttpExceptionsFilter} from "./core/exceptions/filters/domain-exceptions.filter";
 
 @Module({
     //все модули должны быть заимпортированы в корневой модуль, либо напрямую, либо по цепочке (через другие модули)
@@ -22,7 +25,17 @@ import {NotificationsModule} from "./modules/notifications/notifications.module"
         NotificationsModule
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService,
+        //важен порядок регистрации! Первым сработает DomainHttpExceptionsFilter!
+        {
+            provide: APP_FILTER,
+            useClass: AllHttpExceptionsFilter,
+        },
+        {
+            provide: APP_FILTER,
+            useClass: DomainHttpExceptionsFilter,
+        },
+    ],
 })
 export class AppModule {
 }

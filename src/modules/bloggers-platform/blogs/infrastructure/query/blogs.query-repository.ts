@@ -6,6 +6,8 @@ import {GetBlogsQueryParams} from "../../api/input-dto/get-blogs-query-params.in
 import {Injectable, NotFoundException} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {SortDirection} from "../../../../../core/dto/base.query-params.input-dto";
+import {DomainException} from "../../../../../core/exceptions/domain-exceptions";
+import {DomainExceptionCode} from "../../../../../core/exceptions/domain-exception-codes";
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -86,7 +88,11 @@ export class BlogsQueryRepository {
         }).lean();
 
         if (!blog) {
-            throw new NotFoundException('Blog not found');
+            // throw new NotFoundException('Blog not found');
+            throw new DomainException({
+                code: DomainExceptionCode.BlogNotFound,
+                message: `Blog not found`,
+            });
         }
         return BlogViewDto.mapToView(blog);
     }

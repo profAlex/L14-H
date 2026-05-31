@@ -7,6 +7,8 @@ import {Blog, BlogModelType} from "../domain/blog.entity";
 import {InjectModel} from "@nestjs/mongoose";
 import {CreateBlogDto} from "../dto/create-blog.dto";
 import {BlogsCommandRepository} from "../infrastructure/blogs.command-repository";
+import {DomainExceptionCode} from "../../../../core/exceptions/domain-exception-codes";
+import {DomainException} from "../../../../core/exceptions/domain-exceptions";
 
 @Injectable()
 export class BlogsService {
@@ -57,7 +59,11 @@ export class BlogsService {
         const blog = await this.blogsCommandRepository.getBlogDocumentById(blogId);
 
         if (!blog) {
-            throw new NotFoundException(`Blog with id ${blogId} not found`);
+            // throw new NotFoundException(`Blog with id ${blogId} not found`);
+            throw new DomainException({
+                code: DomainExceptionCode.BlogNotFound,
+                message: `Blog with id ${blogId} not found`,
+            });
         }
 
         blog.updateBlog({name, description, websiteUrl});    // Если нашли, обновляем
@@ -67,7 +73,11 @@ export class BlogsService {
     async deleteBlogById(blogId: string): Promise<void> {
         const blog = await this.blogsCommandRepository.getBlogDocumentById(blogId);
         if (!blog) {
-            throw new NotFoundException(`Blog with id ${blogId} not found`);
+            // throw new NotFoundException(`Blog with id ${blogId} not found`);
+            throw new DomainException({
+                code: DomainExceptionCode.BlogNotFound,
+                message: `Blog with id ${blogId} not found`,
+            });
         }
 
         blog.makeDeleted();

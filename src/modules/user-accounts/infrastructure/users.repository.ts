@@ -1,6 +1,8 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument, UserModelType } from '../domain/user.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import {DomainException} from "../../../core/exceptions/domain-exceptions";
+import {DomainExceptionCode} from "../../../core/exceptions/domain-exception-codes";
 
 @Injectable()
 export class UsersRepository {
@@ -22,8 +24,11 @@ export class UsersRepository {
     const user = await this.UserModel.findOne({_id: id, deletedAt: null});
 
     if (!user) {
-      //TODO: replace with domain exception
-      throw new NotFoundException('user not found');
+      // throw new NotFoundException('user not found');
+      throw new DomainException({
+        code: DomainExceptionCode.UserNotFound,
+        message: 'User not found',
+      });
     }
 
     return user;

@@ -10,6 +10,8 @@ import {InjectModel} from "@nestjs/mongoose";
 import {PostsCommandRepository} from "../infrastructure/posts.command-repository";
 import {CreatePostApiInputDto} from "../api/input-dto/create-post.api.input-dto";
 import {UpdatePostInputDto} from "../dto/create-post-input.dto";
+import {DomainException} from "../../../../core/exceptions/domain-exceptions";
+import {DomainExceptionCode} from "../../../../core/exceptions/domain-exception-codes";
 
 @Injectable()
 export class PostsService {
@@ -27,7 +29,11 @@ export class PostsService {
     }): Promise<PaginatedViewDto<PostViewDto>> {
 
         if (!await this.blogsQueryRepository.ifBlogExists(blogId)) {
-            throw new NotFoundException("Blog not found");
+            // throw new NotFoundException("Blog not found");
+            throw new DomainException({
+                code: DomainExceptionCode.BlogNotFound, // Смапится в 400
+                message: 'Blog not found',
+            });
         }
 
         return this.postsQueryRepository.getPostsByBlogId({userId, blogId, query});
@@ -41,7 +47,11 @@ export class PostsService {
     }): Promise<PostViewDto> {
         const blog = await this.blogsQueryRepository.getBlogName(blogId);
         if (!blog) {
-            throw new NotFoundException("Blog not found");
+            // throw new NotFoundException("Blog not found");
+            throw new DomainException({
+                code: DomainExceptionCode.BlogNotFound,
+                message: `Blog not found`,
+            });
         }
 
         const blogName = blog.name;
@@ -60,7 +70,11 @@ export class PostsService {
 
         const blog = await this.blogsQueryRepository.getBlogName(body.blogId);
         if (!blog) {
-            throw new NotFoundException("Blog not found");
+            // throw new NotFoundException("Blog not found");
+            throw new DomainException({
+                code: DomainExceptionCode.BlogNotFound,
+                message: 'Blog not found!',
+            });
         }
 
         const blogName = blog.name;
@@ -81,7 +95,11 @@ export class PostsService {
 
         const post = await this.postsCommandRepository.findSinglePostById(postId);
         if (!post) {
-            throw new NotFoundException("Post not found");
+            // throw new NotFoundException("Post not found");
+            throw new DomainException({
+                code: DomainExceptionCode.PostNotFound,
+                message: 'Post not found',
+            });
         }
 
         post.updatePost(updateInputData);
@@ -91,7 +109,11 @@ export class PostsService {
     async deletePostById(postId: string): Promise<void> {
         const post = await this.postsCommandRepository.findSinglePostById(postId);
         if (!post) {
-            throw new NotFoundException("Post not found");
+            // throw new NotFoundException("Post not found");
+            throw new DomainException({
+                code: DomainExceptionCode.PostNotFound,
+                message: 'Post not found',
+            });
         }
 
         post.makeDeleted();

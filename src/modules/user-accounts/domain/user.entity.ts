@@ -9,6 +9,8 @@ import {
     EmailConfirmationInfoSchema
 } from "../../authorisation/domain/email-confirmation-info.schema";
 import {BadRequestException} from "@nestjs/common";
+import {DomainException} from "../../../core/exceptions/domain-exceptions";
+import {DomainExceptionCode} from "../../../core/exceptions/domain-exception-codes";
 
 //флаг timestemp автоматичеки добавляет поля upatedAt и createdAt
 /**
@@ -146,7 +148,11 @@ export class User {
 
     confirmEmail() {
         if(this.isEmailConfirmed){
-            throw new BadRequestException('Email is already confirmed!');
+            // throw new BadRequestException('Email is already confirmed!');
+            throw new DomainException({
+                code: DomainExceptionCode.BadRequest,
+                message: 'Email is already confirmed!',
+            });
         }
 
         this.isEmailConfirmed = true;

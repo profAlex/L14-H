@@ -8,6 +8,8 @@ import {PostsQueryRepository} from "../../posts/infrastructure/query/posts.query
 import {CommentsQueryRepository} from "../infrastructure/query/comments.query-repository";
 import {CommentsCommandRepository} from "../infrastructure/comments.command-repository";
 import {CreateCommentApiInputDto} from "../api/input-dto/create-comment.api.input-dto";
+import {DomainException} from "../../../../core/exceptions/domain-exceptions";
+import {DomainExceptionCode} from "../../../../core/exceptions/domain-exception-codes";
 
 @Injectable()
 export class CommentsService {
@@ -28,7 +30,11 @@ export class CommentsService {
     }): Promise<PaginatedViewDto<CommentViewDto>> {
 
         if (!await this.postsQueryRepository.ifPostExists(postId)) {
-            throw new NotFoundException("Post not found");
+            // throw new NotFoundException("Post not found");
+            throw new DomainException({
+                code: DomainExceptionCode.PostNotFound,
+                message: 'Post not found',
+            });
         }
 
         return await this.commentsQueryRepository.getCommentsByPostId({userId, postId, query});

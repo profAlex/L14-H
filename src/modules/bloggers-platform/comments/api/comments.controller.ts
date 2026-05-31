@@ -7,6 +7,8 @@ import {PostViewDto} from "../../posts/api/view-dto/posts.view-dto";
 import {CreateCommentApiInputDto} from "./input-dto/create-comment.api.input-dto";
 import {CommentsCommandRepository} from "../infrastructure/comments.command-repository";
 import {CommentsService} from "../application/comments.service";
+import {DomainException} from "../../../../core/exceptions/domain-exceptions";
+import {DomainExceptionCode} from "../../../../core/exceptions/domain-exception-codes";
 
 @ApiTags('Comments endpoint')
 @Controller('comments')
@@ -22,7 +24,11 @@ export class CommentsController {
         const comment = await this.commentsQueryRepository.getCommentById(commentId);
 
         if (!comment) {
-            throw new NotFoundException("Comment not found!");
+            // throw new NotFoundException("Comment not found!");
+            throw new DomainException({
+                code: DomainExceptionCode.CommentNotFound,
+                message: 'Comment not found!',
+            });
         }
 
         return comment;
@@ -35,7 +41,11 @@ export class CommentsController {
         const comment = await this.commentsQueryRepository.getCommentById(commentId);
 
         if (!comment) {
-            throw new NotFoundException("Comment not found!");
+            // throw new NotFoundException("Comment not found!");
+            throw new DomainException({
+                code: DomainExceptionCode.CommentNotFound,
+                message: 'Comment not found!',
+            });
         }
 
         return comment;

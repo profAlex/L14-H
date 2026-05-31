@@ -6,6 +6,8 @@ import {EmailService} from "../../notifications/email.service";
 import {UsersService} from "../../user-accounts/application/users.service";
 import {UUIDGeneratorUtil} from "../../../core/uuid-generation/uuid.service";
 import {MeViewDto} from "../api/view-dto/me.view-dto";
+import {DomainException} from "../../../core/exceptions/domain-exceptions";
+import {DomainExceptionCode} from "../../../core/exceptions/domain-exception-codes";
 
 @Injectable()
 export class AuthService {
@@ -50,7 +52,10 @@ export class AuthService {
         const checkIfUserCredsAvaliable = await this.usersService.checkIfUserExists(sentLogin, sentEmail);
 
         if (checkIfUserCredsAvaliable) {
-            throw new BadRequestException();
+            throw new DomainException({
+                code: DomainExceptionCode.UserNotFound,
+                message: 'User not found',
+            });
         }
 
         const newUserId = await this.usersService.createUser({
@@ -87,7 +92,11 @@ export class AuthService {
         const userToBeConfirmed = await this.usersService.findUserByConfirmationCode(sentCode);
 
         if (!userToBeConfirmed) {
-            throw new BadRequestException("Email confirmation is wrong, outdated or not found.");
+            // throw new BadRequestException("Email confirmation code is wrong, outdated or not found.");
+            throw new DomainException({
+                code: DomainExceptionCode.ConfirmationCodeExpired,
+                message: 'Email confirmation code is wrong, outdated or not found.',
+            });
         }
 
         userToBeConfirmed.confirmEmail();
@@ -115,7 +124,11 @@ export class AuthService {
     async applyNewPassword(sentNewPassword: string, sentRecoveryCode: string): Promise<void> {
         const user = await this.usersService.findUserByRecoveryCode(sentRecoveryCode)
         if (!user) {
-            throw new BadRequestException("Recovery code is wrong or expired.");
+            // throw new BadRequestException("Recovery code is wrong or expired.");
+            throw new DomainException({
+                code: DomainExceptionCode.PasswordRecoveryCodeExpired,
+                message: 'Recovery code is wrong or expired',
+            });
         }
 
         const newPasswordHash = await this.cryptoService.generateHash(sentNewPassword);

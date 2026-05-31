@@ -5,6 +5,8 @@ import {PaginatedViewDto} from "../../../../../core/dto/base.paginated.view-dto"
 import {InjectModel} from "@nestjs/mongoose";
 import {Post, PostModelType} from "../../domain/post.entity";
 import {SortDirection} from "../../../../../core/dto/base.query-params.input-dto";
+import {DomainException} from "../../../../../core/exceptions/domain-exceptions";
+import {DomainExceptionCode} from "../../../../../core/exceptions/domain-exception-codes";
 
 @Injectable()
 export class PostsQueryRepository {
@@ -120,7 +122,11 @@ export class PostsQueryRepository {
     async getPostByIdOrNotFoundFail(sentPostId: string): Promise<PostViewDto> {
         const post = await this.PostModel.findOne({deletedAt: null, _id: sentPostId});
         if (!post) {
-            throw new NotFoundException("Post not found");
+            // throw new NotFoundException("Post not found");
+            throw new DomainException({
+                code: DomainExceptionCode.PostNotFound,
+                message: `Post not found`,
+            });
         }
 
         return PostViewDto.mapToView(post);

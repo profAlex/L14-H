@@ -8,6 +8,8 @@ import {PaginatedViewDto} from '../../../../core/dto/base.paginated.view-dto';
 import {GetUsersQueryParams} from '../../api/input-dto/get-users-query-params.input-dto';
 import {UserAuthInternalDto} from "../../../authorisation/dto/internal-dto/users.auth-internal-dto";
 import {MeViewDto} from "../../../authorisation/api/view-dto/me.view-dto";
+import {DomainException} from "../../../../core/exceptions/domain-exceptions";
+import {DomainExceptionCode} from "../../../../core/exceptions/domain-exception-codes";
 
 @Injectable()
 export class UsersQueryRepository {
@@ -24,7 +26,11 @@ export class UsersQueryRepository {
         });
 
         if (!user) {
-            throw new NotFoundException('user not found');
+            // throw new NotFoundException('user not found');
+            throw new DomainException({
+                code: DomainExceptionCode.UserNotFound,
+                message: 'User not found',
+            });
         }
 
         return UserViewDto.mapToView(user);
@@ -39,7 +45,11 @@ export class UsersQueryRepository {
             .lean();
 
         if (!user) {
-            throw new NotFoundException('user not found');
+            // throw new NotFoundException('user not found');
+            throw new DomainException({
+                code: DomainExceptionCode.UserNotFound,
+                message: 'User not found',
+            });
         }
 
         return MeViewDto.mapToView(user);
