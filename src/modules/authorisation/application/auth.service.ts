@@ -20,13 +20,15 @@ export class AuthService {
 
     async validateUserCreds(loginOrEmail: string, password: string): Promise<UserContextDto | null> {
         const user = await this.usersService.findUserByLogin(loginOrEmail);
+        // console.log("TEST_STOP");
+
         if (!user) {
             return null;
         }
 
-        if (!user.isEmailConfirmed) {
-            return null;
-        }
+        // if (!user.isEmailConfirmed) {
+        //     return null;
+        // }
 
         const isPasswordValid = await this.cryptoService.checkPassword(
             password,

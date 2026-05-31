@@ -41,6 +41,7 @@ export class UsersController {
     }
 
     @UseGuards(BasicAuthGuard)
+    @HttpCode(HttpStatus.OK)
     @Get()
     async getAll(
         @Query() query: GetUsersQueryParams,
@@ -48,10 +49,12 @@ export class UsersController {
         return this.usersQueryRepository.getAll(query);
     }
 
-
+    @HttpCode(HttpStatus.CREATED)
     @UseGuards(BasicAuthGuard)
     @Post()
     async createUser(@Body() body: CreateUserInputDto): Promise<UserViewDto> {
+        // console.log("<------------TEST HERE1");
+
         const userId = await this.usersService.createUser(body);
 
         return this.usersQueryRepository.getByIdOrNotFoundFail(userId);
@@ -72,6 +75,7 @@ export class UsersController {
 
     @UseGuards(BasicAuthGuard)
     @ApiParam({name: 'id'}) //для сваггера
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     async deleteUser(@Param() idParam: IdParamInputDto): Promise<void> {

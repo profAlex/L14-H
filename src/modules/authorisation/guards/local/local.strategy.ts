@@ -17,6 +17,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     async validate(loginOrEmail: string, password: string): Promise<UserContextDto> {
         const userData = await this.authService.validateUserCreds(loginOrEmail, password);
         // этот конкретный гвард написан только для классического HTTP-контроллера, пожтому мучиться с кастомными обработчиками ошибок нет смысла
+        // console.log("TEST_STOP");
         if (!userData) {
             // throw new UnauthorizedException({ message: 'Wrong login or password' });
             throw new DomainException({

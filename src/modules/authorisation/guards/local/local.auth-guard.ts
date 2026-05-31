@@ -6,6 +6,7 @@ import {DomainExceptionCode} from "../../../../core/exceptions/domain-exception-
 export class LocalAuthGuard extends AuthGuard('local') {
     handleRequest(err, userData, info) {
         // Если стратегия выбросила ошибку или юзер не был найден/пароль не подошел
+        // console.log("TEST_STOP");
         if (err || !userData) {
             // throw new UnauthorizedException({ message: 'Wrong login or password' });
             throw new DomainException({

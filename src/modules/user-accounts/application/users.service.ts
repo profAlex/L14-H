@@ -22,13 +22,14 @@ export class UsersService {
     }
 
     async createUser(dto: CreateUserDto): Promise<string> {
-        //TODO: move to bcrypt service
         const passwordHash = await this.cryptoService.generateHash(dto.password);
+        // console.log("<------------TEST HERE2");
+
         if (!passwordHash) {
             throw new InternalServerErrorException("Couldn't generate hash");
         }
         const confirmationCode = UUIDGeneratorUtil.generateUUID();
-
+        // console.log("<------------TEST HERE3");
         const newUser = this.UserModel.createInstance({
             login: dto.login,
             email: dto.email,

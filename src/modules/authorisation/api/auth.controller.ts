@@ -23,6 +23,7 @@ export class AuthController {
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async login(@Body() body: UserLoginInputDto, @ExtractUserIfExistsFromRequest() user: UserContextDto): Promise<{ accessToken: string }> {
+        // console.log("<---------------- TEST HERE USER_ID: ", user.id);
         return this.authService.loginUser(user.id);
     };
 
