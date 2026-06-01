@@ -51,13 +51,33 @@ export class AuthService {
 
 
     async registerAttempt(sentLogin: string, sentPassword: string, sentEmail: string): Promise<void> {
-        const checkIfUserCredsAvaliable = await this.usersService.checkIfUserExists(sentLogin, sentEmail);
+        // const checkIfUserCredsAvaliable = await this.usersService.checkIfUserExists(sentLogin, sentEmail);
+        //
+        // if (checkIfUserCredsAvaliable) {
+        //     throw new DomainException({
+        //         code: DomainExceptionCode.UserBadRequest,
+        //         message: 'User bad request (not found)',
+        //         extensions: [{message: "", key: "email"}]
+        //     });
+        // }
 
-        if (checkIfUserCredsAvaliable) {
+        // 1. Сначала точечно проверяем, занят ли логин
+        const isLoginTaken = await this.usersService.checkIfUserExists(sentLogin, ""); // передаем пустой email, чтобы проверить только логин
+        if (isLoginTaken) {
             throw new DomainException({
                 code: DomainExceptionCode.UserBadRequest,
-                message: 'User bad request (not found)',
-                extensions: [{message: "", key: "email"}]
+                message: 'User with this login already exists',
+                extensions: [{ message: 'Login is already taken', key: 'login' }] // <-- Четко возвращаем login!
+            });
+        }
+
+        // 2. Если логин свободен, проверяем, занят ли email
+        const isEmailTaken = await this.usersService.checkIfUserExists("", sentEmail); // передаем пустой логин, чтобы проверить только email
+        if (isEmailTaken) {
+            throw new DomainException({
+                code: DomainExceptionCode.UserBadRequest,
+                message: 'User with this email already exists',
+                extensions: [{ message: 'Email is already taken', key: 'email' }] // <-- Четко возвращаем email!
             });
         }
 
