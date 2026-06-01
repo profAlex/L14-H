@@ -17,7 +17,7 @@ const DEFAULT_COOKIE_SECURE = true;
 const DEFAULT_MAIL_PORT = "465";
 const DEFAULT_MAIL_HOST = "smtp.yandex.ru";
 const DEFAULT_MAIL_LOGIN = "geniusb198";
-const DEFAULT_MAIL_PASS = "zrrjbnkwwbzvjsco";
+const DEFAULT_MAIL_PASS = "zjtrfatkvzoxowdr";
 
 const DEFAULT_MONGO_URI = "mongodb+srv://bolly198:bN0Ew0gUNFwqH7VL@newlearningcluster.1tnov1c.mongodb.net/?appName=NewLearningCluster";
 

@@ -57,6 +57,7 @@ export class AuthService {
             throw new DomainException({
                 code: DomainExceptionCode.UserBadRequest,
                 message: 'User bad request (not found)',
+                extensions: [{message: "", key: "email"}]
             });
         }
 
@@ -98,6 +99,7 @@ export class AuthService {
             throw new DomainException({
                 code: DomainExceptionCode.ConfirmationCodeExpired,
                 message: 'Email confirmation code is wrong, outdated or not found.',
+                extensions: [{message: "Email confirmation code is wrong, outdated or not found.", key: "code"}]
             });
         }
         // console.log("<----------------TEST HERE 1", sentCode);
@@ -152,7 +154,8 @@ export class AuthService {
             // Returning "success". Even if current email is not registered (for prevent user's email detection)
             throw new DomainException({
                 code: DomainExceptionCode.BadRequest,
-                message: 'Email already confirmation'
+                message: 'Email already confirmed',
+                extensions: [{message: "Email already confirmed", key: "email"}]
             });
         }
 
