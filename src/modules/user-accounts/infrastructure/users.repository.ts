@@ -17,7 +17,11 @@ export class UsersRepository {
   }
 
   async save(user: UserDocument) {
+    // console.log("<----------------TEST HERE 5");
+
     await user.save();
+    // console.log("<----------------TEST HERE 6");
+
   }
 
   async findOrNotFoundFail(id: string): Promise<UserDocument> {

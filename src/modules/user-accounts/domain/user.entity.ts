@@ -154,10 +154,14 @@ export class User {
                 message: 'Email is already confirmed!',
             });
         }
+        // console.log("<----------------TEST HERE 3");
 
         this.isEmailConfirmed = true;
 
         this.emailConfirmationInfo.confirmationCode = null;
+
+        // console.log("<----------------TEST HERE 4");
+
     }
 
     generateRecoveryCode(recoveryCode: string) {

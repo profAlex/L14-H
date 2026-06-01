@@ -8,7 +8,7 @@ import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 
 @Schema({_id: false})
 export class EmailConfirmationInfo {
-    @Prop({ type: String, required: true })
+    @Prop({ type: String, unique: true, sparse: true })
     confirmationCode: string | null = null;
 
     @Prop({ type: Date, required: true })

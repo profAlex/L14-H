@@ -57,8 +57,10 @@ export class DomainHttpExceptionsFilter implements ExceptionFilter {
             case DomainExceptionCode.BadRequest:
             case DomainExceptionCode.ValidationError:
             case DomainExceptionCode.ConfirmationCodeExpired:
+            case DomainExceptionCode.AlreadyConfirmed:
             case DomainExceptionCode.EmailNotConfirmed:
             case DomainExceptionCode.PasswordRecoveryCodeExpired:
+            case DomainExceptionCode.UserBadRequest:
                 return HttpStatus.BAD_REQUEST;
 
             case DomainExceptionCode.Forbidden:
@@ -66,8 +68,8 @@ export class DomainHttpExceptionsFilter implements ExceptionFilter {
 
             case DomainExceptionCode.BlogNotFound:
             case DomainExceptionCode.PostNotFound:
-            case DomainExceptionCode.UserNotFound:
             case DomainExceptionCode.CommentNotFound:
+            case DomainExceptionCode.UserNotFound:
             case DomainExceptionCode.NotFound:
                 return HttpStatus.NOT_FOUND;
 

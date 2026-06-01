@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, InternalServerErrorException} from "@nestjs/common";
+import {Injectable, InternalServerErrorException} from "@nestjs/common";
 import {UserContextDto} from "../guards/dto/user-context.dto";
 import {CryptoService} from "../../../core/bcrypt/bcrypt.service";
 import {JwtService} from "@nestjs/jwt";
@@ -55,8 +55,8 @@ export class AuthService {
 
         if (checkIfUserCredsAvaliable) {
             throw new DomainException({
-                code: DomainExceptionCode.UserNotFound,
-                message: 'User not found',
+                code: DomainExceptionCode.UserBadRequest,
+                message: 'User bad request (not found)',
             });
         }
 
@@ -82,7 +82,7 @@ export class AuthService {
         // });
         // await this.usersCommandRepository.save(newUser);
 
-        if(!user.emailConfirmationInfo.confirmationCode){
+        if (!user.emailConfirmationInfo.confirmationCode) {
             throw new InternalServerErrorException("Email confirmation code was not generated!");
         }
 
@@ -100,8 +100,9 @@ export class AuthService {
                 message: 'Email confirmation code is wrong, outdated or not found.',
             });
         }
-
+        // console.log("<----------------TEST HERE 1", sentCode);
         userToBeConfirmed.confirmEmail();
+        // console.log("<----------------TEST HERE 2");
 
         await this.usersService.saveUser(userToBeConfirmed);
     };
@@ -134,7 +135,7 @@ export class AuthService {
         }
 
         const newPasswordHash = await this.cryptoService.generateHash(sentNewPassword);
-        if(!newPasswordHash){
+        if (!newPasswordHash) {
             throw new InternalServerErrorException("Password hash wasn't generated!");
         }
 
@@ -147,10 +148,12 @@ export class AuthService {
 
     async resendRegistrationEmail(sentEmail: string): Promise<void> {
         const user = await this.usersService.findNotConfirmedByEmail(sentEmail);
-        if(!user) {
+        if (!user) {
             // Returning "success". Even if current email is not registered (for prevent user's email detection)
-            return;
-            // throw new BadRequestException("Email confirmation is wrong or expired.");
+            throw new DomainException({
+                code: DomainExceptionCode.BadRequest,
+                message: 'Email already confirmation'
+            });
         }
 
         const confirmationCode = UUIDGeneratorUtil.generateUUID();
