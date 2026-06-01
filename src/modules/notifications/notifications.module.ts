@@ -15,6 +15,7 @@ import {EmailService} from "./email.service";
                     user: envConfig.mailLogin, // geniusb198
                     pass: envConfig.mailPass,  // ТУТ ДОЛЖЕН БЫТЬ ПАРОЛЬ ПРИЛОЖЕНИЯ
                 },
+                tls: { rejectUnauthorized: false },
             },
             defaults: {
                 from: '"test-notification" <geniusb198@yandex.ru>',
