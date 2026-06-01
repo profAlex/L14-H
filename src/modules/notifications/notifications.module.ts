@@ -6,7 +6,16 @@ import {EmailService} from "./email.service";
 @Module({
     imports: [
         MailerModule.forRoot({
-            transport: `smtps://${envConfig.mailLogin}:${envConfig.mailPass}@${envConfig.mailHost}`,
+            //transport: `smtps://${envConfig.mailLogin}:${envConfig.mailPass}@${envConfig.mailHost}`,
+            transport: {
+                host: envConfig.mailHost,     // smtp.yandex.ru
+                port: Number(envConfig.mailPort), // 465 (обязательно числом!)
+                secure: true,                 // true для порта 465 (SSL)
+                auth: {
+                    user: envConfig.mailLogin, // geniusb198
+                    pass: envConfig.mailPass,  // ТУТ ДОЛЖЕН БЫТЬ ПАРОЛЬ ПРИЛОЖЕНИЯ
+                },
+            },
             defaults: {
                 from: '"test-notification" <geniusb198@yandex.ru>',
                 subject: 'Подтверждение регистрации',
