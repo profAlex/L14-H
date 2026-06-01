@@ -69,7 +69,7 @@ export class UsersService {
         return this.usersCommandRepository.findOrNotFoundFail(id);
     }
 
-    async checkIfUserExists(login: string, email: string): Promise<boolean> {
+    async checkIfUserExists(login: string, email: string): Promise<'login' | 'email' | null> {
         return this.usersQueryRepository.checkIfUserExists(login, email);
     }
 

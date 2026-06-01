@@ -61,25 +61,22 @@ export class AuthService {
         //     });
         // }
 
-        // 1. Сначала точечно проверяем, занят ли логин
-        const isLoginTaken = await this.usersService.checkIfUserExists(sentLogin, ""); // передаем пустой email, чтобы проверить только логин
-        if (isLoginTaken) {
+        const takenField = await this.usersService.checkIfUserExists(sentLogin, sentEmail);
+        // проверяем отдельно занят ли логин а потом емейл, т.к. логика платформенных тестов требует указания field: login при отсутствии логина,
+        // поэтмоу разделяем ошибки, но можно попробовать вернуть всегда тут такую ошибку
+
+        // если реповернул имя поля, значит оно занято
+        if (takenField) {
             throw new DomainException({
                 code: DomainExceptionCode.UserBadRequest,
-                message: 'User with this credentials already exists',
-                extensions: [{ message: 'Credentials is already taken', key: 'login' }] // <-- Четко возвращаем login!
+                message: `User with this ${takenField} already exists`,
+                // Динамически подставляем 'login' или 'email' в key
+                extensions: [{
+                    message: `${takenField === 'login' ? 'Login' : 'Email'} is already taken`,
+                    key: takenField
+                }]
             });
         }
-        //
-        // // 2. Если логин свободен, проверяем, занят ли email
-        // const isEmailTaken = await this.usersService.checkIfUserExists("", sentEmail); // передаем пустой логин, чтобы проверить только email
-        // if (isEmailTaken) {
-        //     throw new DomainException({
-        //         code: DomainExceptionCode.UserBadRequest,
-        //         message: 'User with this email already exists',
-        //         extensions: [{ message: 'Email is already taken', key: 'email' }] // <-- Четко возвращаем email!
-        //     });
-        // }
 
         const newUserId = await this.usersService.createUser({
             login: sentLogin,
