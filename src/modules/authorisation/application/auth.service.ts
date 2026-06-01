@@ -66,20 +66,20 @@ export class AuthService {
         if (isLoginTaken) {
             throw new DomainException({
                 code: DomainExceptionCode.UserBadRequest,
-                message: 'User with this login already exists',
-                extensions: [{ message: 'Login is already taken', key: 'login' }] // <-- Четко возвращаем login!
+                message: 'User with this credentials already exists',
+                extensions: [{ message: 'Credentials is already taken', key: 'login' }] // <-- Четко возвращаем login!
             });
         }
-
-        // 2. Если логин свободен, проверяем, занят ли email
-        const isEmailTaken = await this.usersService.checkIfUserExists("", sentEmail); // передаем пустой логин, чтобы проверить только email
-        if (isEmailTaken) {
-            throw new DomainException({
-                code: DomainExceptionCode.UserBadRequest,
-                message: 'User with this email already exists',
-                extensions: [{ message: 'Email is already taken', key: 'email' }] // <-- Четко возвращаем email!
-            });
-        }
+        //
+        // // 2. Если логин свободен, проверяем, занят ли email
+        // const isEmailTaken = await this.usersService.checkIfUserExists("", sentEmail); // передаем пустой логин, чтобы проверить только email
+        // if (isEmailTaken) {
+        //     throw new DomainException({
+        //         code: DomainExceptionCode.UserBadRequest,
+        //         message: 'User with this email already exists',
+        //         extensions: [{ message: 'Email is already taken', key: 'email' }] // <-- Четко возвращаем email!
+        //     });
+        // }
 
         const newUserId = await this.usersService.createUser({
             login: sentLogin,

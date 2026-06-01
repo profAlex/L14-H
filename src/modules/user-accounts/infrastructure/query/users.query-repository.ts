@@ -115,14 +115,34 @@ export class UsersQueryRepository {
     };
 
 
+    // async checkIfUserExists(login: string, email: string): Promise<'login' | 'email' | null> {
+    //     // Проверяем отдельно занят ли логин а потом емейл, т.к. логика платформенных тестов требует указания field: login при отсутствии логина,
+    //     // поэтмоу разделяем ошибки, но можно попробовать вернуть всегда тут такую ошибку
+    //     const loginCount = await this.UserModel.countDocuments({
+    //         login: login,
+    //         deletedAt: null
+    //     });
+    //     if (loginCount > 0) return 'login';
+    //
+    //     // 2. Проверяем, занят ли email
+    //     const emailCount = await this.UserModel.countDocuments({
+    //         email: email,
+    //         deletedAt: null
+    //     });
+    //     if (emailCount > 0) return 'email';
+    //
+    //     // 3. Если ничего не занято — всё отлично
+    //     return null;
+    // }
+
     async checkIfUserExists(login: string, email: string): Promise<boolean> {
-        return (await this.UserModel.countDocuments({
-            $or: [
-                {login: login},
-                {email: email}
-            ],
-            $and: [{deletedAt: null}]
-        }) > 0)
+        // Проверяем отдельно занят ли логин а потом емейл, т.к. логика платформенных тестов требует указания field: login при отсутствии логина,
+        // поэтмоу разделяем ошибки, но можно попробовать вернуть всегда тут такую ошибку
+
+        return await this.UserModel.countDocuments({
+            $or: [{login: login},{email: email}],
+            deletedAt: null
+        })>0;
     }
 
     async findUserByConfirmationCode(confirmationCode: string): Promise<UserDocument | null> {
