@@ -29,25 +29,6 @@ export class BlogsService {
         await this.blogsCommandRepository.save(blog);
 
         return blog.id;
-
-        // // 🔥 ВЫВОДИМ ТО, ЧТО ПРИШЛО ИЗ КОНТРОЛЛЕРА
-        // console.log('=== ДАННЫЕ В СЕРВИСЕ ===', dto);
-        //
-        // const blog = this.BlogModel.createInstance({
-        //     name: dto.name,
-        //     description: dto.description,
-        //     websiteUrl: dto.websiteUrl
-        // });
-        //
-        // // 🔥 ВЫВОДИМ ТО, ЧТО ПОЛУЧИЛОСЬ ПОСЛЕ ФАБРИКИ
-        // console.log('=== ОБЪЕКТ ДЛЯ БАЗЫ ===', {
-        //     name: blog.name,
-        //     description: blog.description,
-        //     websiteUrl: blog.websiteUrl
-        // });
-        //
-        // await this.blogsCommandRepository.save(blog);
-        // return blog.id;
     }
 
     async updateBlogById({blogId, name, description, websiteUrl}: {

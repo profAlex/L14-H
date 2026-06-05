@@ -3,12 +3,10 @@ import {HydratedDocument, Model} from 'mongoose';
 import {UpdateUserDto} from '../dto/create-user.dto';
 import {CreateUserDomainDto} from './dto/create-user.domain.dto';
 import {Name, NameSchema} from './name.schema';
-import {UUIDGeneratorUtil} from "../../../core/uuid-generation/uuid.service";
 import {
     EmailConfirmationInfo,
     EmailConfirmationInfoSchema
 } from "../../authorisation/domain/email-confirmation-info.schema";
-import {BadRequestException} from "@nestjs/common";
 import {DomainException} from "../../../core/exceptions/domain-exceptions";
 import {DomainExceptionCode} from "../../../core/exceptions/domain-exception-codes";
 

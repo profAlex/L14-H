@@ -20,15 +20,10 @@ export class AuthService {
 
     async validateUserCreds(loginOrEmail: string, password: string): Promise<UserContextDto | null> {
         const user = await this.usersService.findUserByLogin(loginOrEmail);
-        // console.log("TEST_STOP");
 
         if (!user) {
             return null;
         }
-
-        // if (!user.isEmailConfirmed) {
-        //     return null;
-        // }
 
         const isPasswordValid = await this.cryptoService.checkPassword(
             password,
@@ -51,15 +46,6 @@ export class AuthService {
 
 
     async registerAttempt(sentLogin: string, sentPassword: string, sentEmail: string): Promise<void> {
-        // const checkIfUserCredsAvaliable = await this.usersService.checkIfUserExists(sentLogin, sentEmail);
-        //
-        // if (checkIfUserCredsAvaliable) {
-        //     throw new DomainException({
-        //         code: DomainExceptionCode.UserBadRequest,
-        //         message: 'User bad request (not found)',
-        //         extensions: [{message: "", key: "email"}]
-        //     });
-        // }
 
         const takenField = await this.usersService.checkIfUserExists(sentLogin, sentEmail);
         // проверяем отдельно занят ли логин а потом емейл, т.к. логика платформенных тестов требует указания field: login при отсутствии логина,
